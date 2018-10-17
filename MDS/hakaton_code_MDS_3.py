@@ -14,11 +14,13 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 import datetime
+import platform
 #import mds
 
-
-pp = "/home/psakicki/GFZ_WORK/PROJECTS_OTHERS/1810_GeoX_Autumn_School/1810_CHALLANGE/DATA/MGEX_orbits_small_2_tree_kept/wk1990"
-os.chdir(pp)
+if platform.node() == 'TPX1-GFZ':
+    pp = "/home/psakicki/GFZ_WORK/PROJECTS_OTHERS/1810_GeoX_Autumn_School/1810_CHALLANGE/DATA/MGEX_orbits_small_2_tree_kept/wk1990"
+    os.chdir(pp)
+    
 
 p1="../../MGEX_orbits_small_2_tree_kept/wk1990/com19902.sp3"
 p2="../../MGEX_orbits_small_2_tree_kept/wk1990/gbm19902.sp3"
