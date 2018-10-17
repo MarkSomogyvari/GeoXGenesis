@@ -15,7 +15,7 @@ import os
 import matplotlib.pyplot as plt
 import datetime
 import platform
-#import mds
+import mds
 
 if platform.node() == 'TPX1-GFZ':
     pp = "/home/psakicki/GFZ_WORK/PROJECTS_OTHERS/1810_GeoX_Autumn_School/1810_CHALLANGE/DATA/MGEX_orbits_small_2_tree_kept/wk1990"
@@ -25,26 +25,26 @@ if platform.node() == 'TPX1-GFZ':
 
 
 p1="../../MGEX_orbits_small_2_tree_kept/wk1990/com19902.sp3"
-p2="../../MGEX_orbits_small_2_tree_kept/wk1990/gbm19902.sp3"
+p2="../../MGEX_orbits_small_2_tree_kept/wk1990/grm19902.sp3"
 p3="../../MGEX_orbits_small_2_tree_kept/wk1990/igs19902.sp3"
-p4="../../MGEX_orbits_small_2_tree_kept/wk1990/tum19902.sp3"
-p5="../../MGEX_orbits_small_2_tree_kept/wk1990/jam19902.sp3"
+p4="../../MGEX_orbits_small_2_tree_kept/wk1990/gbm19902.sp3"
+p5="../../MGEX_orbits_small_2_tree_kept/wk1990/igr19902.sp3"
 p6="../../MGEX_orbits_small_2_tree_kept/wk1990/wum19902.sp3"
 
 
 COM_data = gcls.read_sp3(p1)
 GRM_data = gcls.read_sp3(p2)
 IGS_data = gcls.read_sp3(p3)
-TUM_data = gcls.read_sp3(p4)
-JAM_data = gcls.read_sp3(p5)
+GBM_data = gcls.read_sp3(p4)
+IGR_data = gcls.read_sp3(p5)
 #WUM_data = gcls.read_sp3(p6)
 
 
 COM_data.sort_values(by=["epoch","sat"],inplace=True)
 GRM_data.sort_values(by=["epoch","sat"],inplace=True)
 IGS_data.sort_values(by=["epoch","sat"],inplace=True)
-TUM_data.sort_values(by=["epoch","sat"],inplace=True)
-JAM_data.sort_values(by=["epoch","sat"],inplace=True)
+GBM_data.sort_values(by=["epoch","sat"],inplace=True)
+IGR_data.sort_values(by=["epoch","sat"],inplace=True)
 
 def AC_equiv_vals(AC1,AC2):
     ### 1) Merge the 2 DF to find common lines
@@ -77,11 +77,11 @@ def AC_equiv_vals(AC1,AC2):
     return AC1_ok , AC2_ok
 
 
-DC_DF_list = [COM_data,GRM_data,IGS_data,TUM_data,JAM_data]
-DC_names   = ["COM","GRM","IGS","TUM","JAM"]
+DC_DF_list = [COM_data,GRM_data,IGS_data,GBM_data,IGR_data]
+DC_names   = ["COM","GRM","IGS","GBM","IGR"]
 
-n_AC = len(DC_DF_list)
-distance   = np.ones([n_AC,n_AC]) * 42
+n_AC = 5#len(DC_DF_list)
+distance   = np.zeros([n_AC,n_AC])
 good_ratio = np.zeros([n_AC,n_AC])
 
 for (i_AC1 , i_AC2) in itertools.permutations(range(n_AC),2):
@@ -94,6 +94,19 @@ for (i_AC1 , i_AC2) in itertools.permutations(range(n_AC),2):
     difference = np.nanmean(np.abs(AC1_ok["x"].values - AC2_ok["x"].values))
     
     distance[i_AC1,i_AC2]   = difference
-    good_ratio[i_AC1,i_AC2] = np.sum(AC12_bad_bool) / len(AC12_bad_bool)
+    #good_ratio[i_AC1,i_AC2] = np.sum(AC12_bad_bool) / len(AC12_bad_bool)
 
-#mds.cmdscale(distance)           
+#MC enriching data
+rate = 100
+#distance_rich = np.zeros([len(distance),len(distance)])
+#np.random.seed(1)
+#distance_rich1 = np.hstack([np.ones([rate,rate])*distance[0,0],np.ones([rate,rate])*distance[0,1],np.ones([rate,rate])*distance[0,2]])
+#distance_rich2 = np.hstack([np.ones([rate,rate])*distance[1,0],np.ones([rate,rate])*distance[1,1],np.ones([rate,rate])*distance[1,2]])
+#distance_rich3 = np.hstack([np.ones([rate,rate])*distance[2,0],np.ones([rate,rate])*distance[2,1],np.ones([rate,rate])*distance[2,2]])
+#distance_rich = np.vstack([distance_rich1,distance_rich2,distance_rich3])+np.random.normal(0,10**-5,[len(distance)*rate,len(distance)*rate])
+#np.fill_diagonal(distance_rich, 0)
+
+[Y,e] = mds.cmdscale(distance*1000)   
+
+plt.scatter(Y[:,0],Y[:,1])
+xlim()       
