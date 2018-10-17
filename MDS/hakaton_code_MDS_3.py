@@ -22,6 +22,8 @@ if platform.node() == 'TPX1-GFZ':
     os.chdir(pp)
     
 
+
+
 p1="../../MGEX_orbits_small_2_tree_kept/wk1990/com19902.sp3"
 p2="../../MGEX_orbits_small_2_tree_kept/wk1990/gbm19902.sp3"
 p3="../../MGEX_orbits_small_2_tree_kept/wk1990/igs19902.sp3"
@@ -35,7 +37,7 @@ GRM_data = gcls.read_sp3(p2)
 IGS_data = gcls.read_sp3(p3)
 TUM_data = gcls.read_sp3(p4)
 JAM_data = gcls.read_sp3(p5)
-WUM_data = gcls.read_sp3(p6)
+#WUM_data = gcls.read_sp3(p6)
 
 
 COM_data.sort_values(by=["epoch","sat"],inplace=True)
@@ -43,17 +45,6 @@ GRM_data.sort_values(by=["epoch","sat"],inplace=True)
 IGS_data.sort_values(by=["epoch","sat"],inplace=True)
 TUM_data.sort_values(by=["epoch","sat"],inplace=True)
 JAM_data.sort_values(by=["epoch","sat"],inplace=True)
-
-
-DC_DF_list = [COM_data,GRM_data,IGS_data,TUM_data,JAM_data]
-DC_names   = ["COM","GRM","IGS","TUM","JAM"]
-
-
-n_AC = len(DC_DF_list)
-distance   = np.ones([n_AC,n_AC]) * 42
-good_ratio = np.zeros([n_AC,n_AC])
-
-
 
 def AC_equiv_vals(AC1,AC2):
     ### 1) Merge the 2 DF to find common lines
@@ -83,10 +74,15 @@ def AC_equiv_vals(AC1,AC2):
     AC1_ok = AC1new[AC12_bad_bool]
     AC2_ok = AC2new[AC12_bad_bool]
     
-    return AC1 , AC2
+    return AC1_ok , AC2_ok
 
 
+DC_DF_list = [COM_data,GRM_data,IGS_data,TUM_data,JAM_data]
+DC_names   = ["COM","GRM","IGS","TUM","JAM"]
 
+n_AC = len(DC_DF_list)
+distance   = np.ones([n_AC,n_AC]) * 42
+good_ratio = np.zeros([n_AC,n_AC])
 
 for (i_AC1 , i_AC2) in itertools.permutations(range(n_AC),2):
     AC1 = DC_DF_list[i_AC1]
