@@ -16,6 +16,7 @@ import matplotlib.pyplot as plt
 import datetime
 import platform
 import mds
+from mpl_toolkits import mplot3d
 
 if platform.node() == 'TPX1-GFZ':
     pp = "/home/psakicki/GFZ_WORK/PROJECTS_OTHERS/1810_GeoX_Autumn_School/1810_CHALLANGE/DATA/MGEX_orbits_small_2_tree_kept/wk1990"
@@ -106,7 +107,24 @@ rate = 100
 #distance_rich = np.vstack([distance_rich1,distance_rich2,distance_rich3])+np.random.normal(0,10**-5,[len(distance)*rate,len(distance)*rate])
 #np.fill_diagonal(distance_rich, 0)
 
+
 [Y,e] = mds.cmdscale(distance*1000)   
+XY = np.vstack([Y[:,0],Y[:,1]]).T
 
 plt.scatter(Y[:,0],Y[:,1])
 xlim()       
+
+#XYT = np.copy(XY)
+XYT = np.hstack([XY,np.zeros([5,1])])
+for i in range(0,10):
+    XYT = np.vstack([XYT,np.hstack([XY,np.ones([5,1])*i])])
+    
+plt.scatter(XYT[:,0],XYT[:,1],XYT[:,2])
+ax = plt.axes(projection='3d')
+
+
+
+from mpl_toolkits.mplot3d import Axes3D
+fig = plt.figure()
+ax = fig.add_subplot(111, projection='3d')
+ax.plot(XYT[:,0],XYT[:,1],XYT[:,2])
