@@ -97,15 +97,6 @@ for (i_AC1 , i_AC2) in itertools.permutations(range(n_AC),2):
     distance[i_AC1,i_AC2]   = difference
     #good_ratio[i_AC1,i_AC2] = np.sum(AC12_bad_bool) / len(AC12_bad_bool)
 
-#MC enriching data
-rate = 100
-#distance_rich = np.zeros([len(distance),len(distance)])
-#np.random.seed(1)
-#distance_rich1 = np.hstack([np.ones([rate,rate])*distance[0,0],np.ones([rate,rate])*distance[0,1],np.ones([rate,rate])*distance[0,2]])
-#distance_rich2 = np.hstack([np.ones([rate,rate])*distance[1,0],np.ones([rate,rate])*distance[1,1],np.ones([rate,rate])*distance[1,2]])
-#distance_rich3 = np.hstack([np.ones([rate,rate])*distance[2,0],np.ones([rate,rate])*distance[2,1],np.ones([rate,rate])*distance[2,2]])
-#distance_rich = np.vstack([distance_rich1,distance_rich2,distance_rich3])+np.random.normal(0,10**-5,[len(distance)*rate,len(distance)*rate])
-#np.fill_diagonal(distance_rich, 0)
 
 
 [Y,e] = mds.cmdscale(distance*1000)   
@@ -128,3 +119,40 @@ from mpl_toolkits.mplot3d import Axes3D
 fig = plt.figure()
 ax = fig.add_subplot(111, projection='3d')
 ax.plot(XYT[:,0],XYT[:,1],XYT[:,2])
+
+
+
+
+#MC enriching data
+rate = 100
+distance_rich = np.tile(distance,[rate,rate])
+distance_rich_ref = np.copy(distance_rich)
+np.random.seed(1)
+#distance_rich1 = np.hstack([np.ones([rate,rate])*distance[0,0],np.ones([rate,rate])*distance[0,1],np.ones([rate,rate])*distance[0,2]])
+#distance_rich2 = np.hstack([np.ones([rate,rate])*distance[1,0],np.ones([rate,rate])*distance[1,1],np.ones([rate,rate])*distance[1,2]])
+#distance_rich3 = np.hstack([np.ones([rate,rate])*distance[2,0],np.ones([rate,rate])*distance[2,1],np.ones([rate,rate])*distance[2,2]])
+distance_rich = distance_rich+np.random.normal(0,10**-5,[len(distance)*rate,len(distance)*rate])
+np.fill_diagonal(distance_rich, 0)
+
+labels = np.tile(np.array([0,1,2,3,4]),rate)
+[Y,e] = mds.cmdscale(distance_rich*1000)  
+[Y1,e] = mds.cmdscale(distance*1000) 
+
+colors = ['mo', 'go', 'yo', 'ro', 'co']
+#fig = plt.figure()
+#plt.axes('equal')
+for i in range(len(Y)):
+    if i<5:
+        plt.plot(Y[i,0], Y[i,1], colors[labels[i]], label=f'{DC_names[i]}')
+    else:
+        plt.plot(Y[i,0], Y[i,1], colors[labels[i]])
+plt.legend()
+
+plt.plot(-Y1[:,0],-Y1[:,1],marker='x',ms=10,c='k',linewidth=0)
+plt.xlim(-0.025,0.025)
+plt.ylim(-0.025,0.025)
+plt.axes().set_aspect('equal')
+plt.xlabel('x1[m]')
+plt.ylabel('x2[m]')
+
+plt.savefig('mds_trial1.png')
